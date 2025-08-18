@@ -180,6 +180,65 @@
                     </section>
                 </section> <!-- Sobre -->
 
+                <section> <!-- Estratégias -->
+                    <section>
+                        <h1>Estratégias</h1>
+                        <h2><i>Recreate deployment</i></h2>
+                        <p>
+                            Desliga a versão atual e sobe a nova em seguida. Simples, porém com indisponibilidade
+                            temporária.
+                        </p>
+                        <img src="assets/img/deployment-recreate.png" alt="Recreate deployment"
+                             class="filter-invert">
+                        <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
+                           class="reference">
+                            System Design - Estratégias de Deployment | Matheus Fidelis
+                        </a>
+                    </section>
+                    <section>
+                        <h1>Estratégias</h1>
+                        <h2><i>Rolling deployment</i></h2>
+                        <p>
+                            Atualiza gradualmente instância por instância. Minimiza <i>downtime</i>, mas pode misturar
+                            versões durante a transição.
+                        </p>
+                        <img src="assets/img/deployment-rolling.png" alt="Rolling deployment"
+                             class="filter-invert">
+                        <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
+                           class="reference">
+                            System Design - Estratégias de Deployment | Matheus Fidelis
+                        </a>
+                    </section>
+                    <section>
+                        <h1>Estratégias</h1>
+                        <h2><i>Canary deployment</i></h2>
+                        <p>
+                            Libera para uma pequena parcela dos usuários primeiro. Monitora métricas; se tudo estiver
+                            bem, expande até 100%. Ideal para reduzir risco.
+                        </p>
+                        <img src="assets/img/deployment-canary.png" alt="Canary deployment"
+                             class="filter-invert">
+                        <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
+                           class="reference">
+                            System Design - Estratégias de Deployment | Matheus Fidelis
+                        </a>
+                    </section>
+                    <section>
+                        <h1>Estratégias</h1>
+                        <h2><i>Blue/green deployment</i></h2>
+                        <p>
+                            Mantém dois ambientes idênticos (blue e green). Você publica na “nova” cor, valida e muda o
+                            tráfego em um clique, com rollback instantâneo.
+                        </p>
+                        <img src="assets/img/deployment-blue-green.png" alt="Blue/green deployment"
+                             class="filter-invert">
+                        <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
+                           class="reference">
+                            System Design - Estratégias de Deployment | Matheus Fidelis
+                        </a>
+                    </section>
+                </section> <!-- Estratégias -->
+
                 <section> <!-- Disclaimer -->
                     <section data-auto-animate data-auto-animate-restart>
                         <h1 class="title"><i>Disclaimer</i></h1>
@@ -191,59 +250,151 @@
                     </section>
                 </section> <!-- Disclaimer -->
 
-                <section> <!-- Problema -->
-                    <section data-auto-animate data-auto-animate-restart>
-                        <h1>Problema</h1>
+                <section> <!-- Prática -->
+                    <section>
+                        <h1>Prática</h1>
                     </section>
-                    <section data-auto-animate>
-                        <h1>Problema</h1>
-                    </section>
-                </section> <!-- Problema -->
 
-                <section> <!-- Solução -->
-                    <section>
-                        <h1>Solução</h1>
-                    </section>
-                    <section>
-                        <h1>Solução</h1>
-                        <h2>Docker Compose</h2>
-                        <pre><code class="yaml" data-trim data-line-numbers>
+                    <section data-auto-animate data-auto-animate-restart>
+                        <h1>Prática</h1>
+                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
+                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
                             services:
                               nginx:
                                 image: nginx:1-alpine
-                                deploy:
-                                  restart_policy:
-                                    condition: on-failure
                                 ports:
                                   - "80:80"
                                   - "443:443"
                                 volumes:
-                                  - "./docker/nginx.conf.template:/etc/nginx/templates/default.conf.template"
-                                  - "./docker/18-nginx-detect-upstream.sh:/docker-entrypoint.d/18-nginx-detect-upstream.sh"
-                                  - "./docker/19-nginx-upstream.envsh:/docker-entrypoint.d/19-nginx-upstream.envsh"
+                                  - "./nginx.conf:/etc/nginx/conf.d/default.conf"
+
+                              app:
+                                image: aplicacao:1.0.0
+                                env_file:
+                                  - app.env
+                        </code></pre>
+                    </section>
+                    <section data-auto-animate>
+                        <h1>Prática</h1>
+                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
+                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
+                            services:
+                              nginx:
+                                image: nginx:1-alpine
+                                ports:
+                                  - "80:80"
+                                  - "443:443"
+                                volumes:
+                                  - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
+
+                              app1:
+                                image: $IMAGE1
+                                env_file:
+                                  - app1.env
+
+                              app2:
+                                image: $IMAGE2
+                                env_file:
+                                  - app2.env
+                        </code></pre>
+                    </section>
+                    <section data-auto-animate>
+                        <h1>Prática</h1>
+                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
+                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
+                            services:
+                              nginx:
+                                image: nginx:1-alpine
+                                ports:
+                                  - "80:80"
+                                  - "443:443"
+                                volumes:
+                                  - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
+                                  - "./18-nginx-detect-upstream.sh:/docker-entrypoint.d/18-nginx-detect-upstream.sh"
+                                  - "./19-nginx-upstream.envsh:/docker-entrypoint.d/19-nginx-upstream.envsh"
                                 env_file:
                                   - nginx.env
-                                healthcheck:
-                                  test: ["CMD", "curl", "-f", "localhost/ping"]
 
                               app1:
                                 image: $IMAGE_BLUE
-                                deploy:
-                                  restart_policy:
-                                    condition: unless-stopped
                                 env_file:
                                   - app1.env
 
                               app2:
                                 image: $IMAGE_GREEN
-                                deploy:
-                                  restart_policy:
-                                    condition: unless-stopped
                                 env_file:
                                   - app2.env
                         </code></pre>
                     </section>
-                </section> <!-- Solução -->
+
+                    <section>
+                        <h1>Prática</h1>
+                        <h2>Roteamento do tráfego com nginx</h2>
+                        <pre><code class="nginx" data-trim data-line-numbers>
+                            server {
+                                listen 80 default_server;
+
+                                root /var/www/html/public;
+                                index index.php;
+
+                                location / {
+                                    try_files $uri $uri/ /index.php$is_args$args;
+                                }
+
+                                location ~ \.php$ {
+                                    fastcgi_pass   ${APP_HOST}:${APP_PORT};
+                                    fastcgi_index  index.php;
+                                    include        fastcgi.conf;
+                                }
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h1>Prática</h1>
+                        <h2><i>Rollback</i></h2>
+                    </section>
+                </section> <!-- Prática -->
+
+                <section> <!-- GitHub Actions -->
+                    <section data-auto-animate data-auto-animate-restart>
+                        <h1 class="title">GitHub Actions</h1>
+                    </section>
+                    <section data-auto-animate>
+                        <h1 class="title">GitHub Actions</h1>
+                        <blockquote>
+                            Automatize, personalize e execute seus fluxos de trabalho de desenvolvimento do software
+                            diretamente no seu repositório com o GitHub Actions. Você pode descobrir, criar e
+                            compartilhar ações para realizar qualquer trabalho que desejar, incluindo CI/CD, bem como
+                            combinar ações em um fluxo de trabalho completamente personalizado.
+                        </blockquote>
+
+                        <a href="https://docs.github.com/pt/actions" target="_blank" rel="noopener"
+                           class="reference">
+                            GitHub Actions
+                        </a>
+                    </section>
+                    <section data-auto-animate>
+                        <h1 class="title">GitHub Actions</h1>
+
+                        <p>
+                            Um <b>Fluxo de trabalho</b> <i>("workflow")</i> é configurado através de um arquivo
+                            <a href="https://yaml.org/" target="_blank" rel="noopener">YAML</a> na pasta
+                            <code>.github/workflows</code> do seu repositório
+                        </p>
+
+                        <a href="https://viniciuscampitelli.com/slides-pipelines-ci-cd/" target="_blank" rel="noopener"
+                           class="reference">Meus slides: Criando esteiras de CI/CD performáticas e seguras</a>
+                    </section>
+                </section> <!-- GitHub Actions -->
+
+                <section> <!-- Automatizando com GitHub Actions -->
+                    <section data-auto-animate data-auto-animate-restart>
+                        <h1>Automatizando com GitHub Actions</h1>
+                    </section>
+                    <section data-auto-animate>
+                        <h1>Automatizando com GitHub Actions</h1>
+                    </section>
+                </section> <!-- Automatizando com GitHub Actions -->
 
                 <section> <!-- Referências -->
                     <section data-auto-animate data-auto-animate-restart>

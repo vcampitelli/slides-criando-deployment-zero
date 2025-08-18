@@ -39,6 +39,11 @@ h1:not(.title, :last-child) {
   letter-spacing: var(--code-letter-spacing);
 }
 
+/* Imagens */
+.filter-invert {
+  filter: invert(1);
+}
+
 /* Sobre mim */
 #about-me {
   display: flex;
@@ -107,7 +112,6 @@ h1:not(.title, :last-child) {
   line-height: 1.2;
   font-size: 1.3em;
 }
-
 
 /* Referências */
 a.reference {
