@@ -3,7 +3,7 @@
   --r-heading-text-transform: none;
   --r-heading-letter-spacing: -0.04em;
   --code-letter-spacing: -0.02em;
-  --border-radius: 1em;
+  --border-radius: 0.5em;
 }
 
 /* Slides */
@@ -33,10 +33,36 @@ h1:not(.title, :last-child) {
   font-weight: 600;
 }
 
-/* Código */
+/* Layout */
+.d-flex {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 1em;
+}
+.d-flex.cols-2 > div {
+  flex: calc(50% - 0.5em) 1 0;
+}
+
+  /* Código */
 .reveal pre {
   width: 100%;
   letter-spacing: var(--code-letter-spacing);
+}
+code.hljs {
+  border-radius: var(--border-radius);
+}
+kbd, code:not(.hljs) {
+  font-family: var(--r-code-font);
+}
+.hljs-ln-line.hljs-ln-numbers {
+  white-space: nowrap;
+  opacity: 0.3;
+}
+.hljs.language-shell {
+  user-select: all;
+}
+.hljs.language-shell > span.hljs-meta.prompt_:first-child {
+  user-select: none;
 }
 
 /* Imagens */
@@ -115,6 +141,7 @@ h1:not(.title, :last-child) {
 
 /* Referências */
 a.reference {
+  display: block;
   font-size: 0.6em;
 }
 a.reference {
@@ -124,9 +151,9 @@ a.reference {
 }
 a.reference:before {
   opacity: var(--link-opacity);
-  content: '<';
+  content: '[';
 }
 a.reference:after {
   opacity: var(--link-opacity);
-  content: '>';
+  content: ']';
 }

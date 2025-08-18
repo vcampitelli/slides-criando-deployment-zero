@@ -183,13 +183,16 @@
                 <section> <!-- Estratégias -->
                     <section>
                         <h1>Estratégias</h1>
+                    </section>
+                    <section>
+                        <h1>Estratégias</h1>
                         <h2><i>Recreate deployment</i></h2>
                         <p>
                             Desliga a versão atual e sobe a nova em seguida. Simples, porém com indisponibilidade
                             temporária.
                         </p>
                         <img src="assets/img/deployment-recreate.png" alt="Recreate deployment"
-                             class="filter-invert">
+                             class="filter-invert r-stretch">
                         <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
                            class="reference">
                             System Design - Estratégias de Deployment | Matheus Fidelis
@@ -203,7 +206,7 @@
                             versões durante a transição.
                         </p>
                         <img src="assets/img/deployment-rolling.png" alt="Rolling deployment"
-                             class="filter-invert">
+                             class="filter-invert r-stretch">
                         <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
                            class="reference">
                             System Design - Estratégias de Deployment | Matheus Fidelis
@@ -217,7 +220,7 @@
                             bem, expande até 100%. Ideal para reduzir risco.
                         </p>
                         <img src="assets/img/deployment-canary.png" alt="Canary deployment"
-                             class="filter-invert">
+                             class="filter-invert r-stretch">
                         <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
                            class="reference">
                             System Design - Estratégias de Deployment | Matheus Fidelis
@@ -231,7 +234,7 @@
                             tráfego em um clique, com rollback instantâneo.
                         </p>
                         <img src="assets/img/deployment-blue-green.png" alt="Blue/green deployment"
-                             class="filter-invert">
+                             class="filter-invert r-stretch">
                         <a href="https://fidelissauro.dev/deployment-strategies/" target="_blank" rel="noopener"
                            class="reference">
                             System Design - Estratégias de Deployment | Matheus Fidelis
@@ -246,6 +249,8 @@
                     <section data-auto-animate>
                         <h1 class="title"><i>Disclaimer</i></h1>
                         <blockquote>
+                            O intuito dessa palestra é meramente educacional! Em cenários reais, é extremamente
+                            recomendado utilizar ferramentas robustas de mercado.
                         </blockquote>
                     </section>
                 </section> <!-- Disclaimer -->
@@ -254,83 +259,51 @@
                     <section>
                         <h1>Prática</h1>
                     </section>
-
-                    <section data-auto-animate data-auto-animate-restart>
+                    <section>
                         <h1>Prática</h1>
                         <h2>Gerenciamento com <i>Docker Compose</i></h2>
-                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
+                        <pre><code class="yaml" data-trim data-line-numbers="|2-9|11-15|17-21">
                             services:
                               nginx:
                                 image: nginx:1-alpine
                                 ports:
                                   - "80:80"
-                                  - "443:443"
-                                volumes:
-                                  - "./nginx.conf:/etc/nginx/conf.d/default.conf"
-
-                              app:
-                                image: aplicacao:1.0.0
-                                env_file:
-                                  - app.env
-                        </code></pre>
-                    </section>
-                    <section data-auto-animate>
-                        <h1>Prática</h1>
-                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
-                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
-                            services:
-                              nginx:
-                                image: nginx:1-alpine
-                                ports:
-                                  - "80:80"
-                                  - "443:443"
                                 volumes:
                                   - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
+                                environment:
+                                  APP_HOST: $APP_HOST
 
                               app1:
                                 image: $IMAGE1
+                                restart: unless-stopped
                                 env_file:
                                   - app1.env
 
                               app2:
                                 image: $IMAGE2
+                                restart: unless-stopped
                                 env_file:
                                   - app2.env
                         </code></pre>
+                        <p>
+                            Arquivo <kbd>compose.yaml</kbd> com a configuração necessária para ter as duas aplicações
+                            possíveis
+                        </p>
                     </section>
                     <section data-auto-animate>
                         <h1>Prática</h1>
                         <h2>Gerenciamento com <i>Docker Compose</i></h2>
-                        <pre data-id="pre"><code class="yaml" data-trim data-line-numbers>
-                            services:
-                              nginx:
-                                image: nginx:1-alpine
-                                ports:
-                                  - "80:80"
-                                  - "443:443"
-                                volumes:
-                                  - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
-                                  - "./18-nginx-detect-upstream.sh:/docker-entrypoint.d/18-nginx-detect-upstream.sh"
-                                  - "./19-nginx-upstream.envsh:/docker-entrypoint.d/19-nginx-upstream.envsh"
-                                env_file:
-                                  - nginx.env
-
-                              app1:
-                                image: $IMAGE_BLUE
-                                env_file:
-                                  - app1.env
-
-                              app2:
-                                image: $IMAGE_GREEN
-                                env_file:
-                                  - app2.env
+                        <pre><code class="dotenv" data-trim data-line-numbers>
+                            APP_HOST=app1
+                            IMAGE1=aplicacao:1.0.0
+                            IMAGE2=aplicacao:1.0.1
                         </code></pre>
+                        <p>Arquivo <kbd>.env</kbd></p>
                     </section>
-
                     <section>
                         <h1>Prática</h1>
                         <h2>Roteamento do tráfego com nginx</h2>
-                        <pre><code class="nginx" data-trim data-line-numbers>
+                        <pre><code class="nginx" data-trim data-line-numbers="|12">
                             server {
                                 listen 80 default_server;
 
@@ -342,12 +315,15 @@
                                 }
 
                                 location ~ \.php$ {
-                                    fastcgi_pass   ${APP_HOST}:${APP_PORT};
+                                    fastcgi_pass   ${APP_HOST}:9000;
                                     fastcgi_index  index.php;
                                     include        fastcgi.conf;
                                 }
                             }
                         </code></pre>
+                        <p>
+                            Arquivo <kbd>nginx.conf.template</kbd>
+                        </p>
                     </section>
                     <section>
                         <h1>Prática</h1>
