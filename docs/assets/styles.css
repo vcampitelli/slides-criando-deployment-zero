@@ -1,0 +1,128 @@
+:root {
+  --r-main-font-size: 28px;
+  --r-heading-text-transform: none;
+  --r-heading-letter-spacing: -0.04em;
+  --code-letter-spacing: -0.02em;
+  --border-radius: 1em;
+}
+
+/* Slides */
+.reveal .slides {
+  letter-spacing: var(--r-heading-letter-spacing);
+}
+.reveal .slide-number {
+  right: auto;
+  left: 8px;
+  bottom: 10px;
+  border-radius: var(--border-radius);
+}
+
+/* Cabeçalhos */
+h1:not(.title, :last-child) {
+  --r-heading1-size: 1.2em;
+  --r-heading-font-weight: 500;
+  --r-heading-margin: 0;
+  opacity: 0.25;
+}
+
+/* Tipografia */
+.reveal em, .reveal i {
+  font-style: oblique;
+}
+.reveal strong, .reveal b {
+  font-weight: 600;
+}
+
+/* Código */
+.reveal pre {
+  width: 100%;
+  letter-spacing: var(--code-letter-spacing);
+}
+
+/* Sobre mim */
+#about-me {
+  display: flex;
+  grid-template-columns: auto 1fr;
+  column-gap: 3rem;
+}
+#about-me > .text-center {
+  margin-top: 0.25em;
+}
+#about-me > ul {
+  list-style-type: circle;
+}
+#profile-pic > img {
+  margin: 0;
+  border-radius: var(--border-radius);
+}
+#profile-pic > figcaption {
+  font-weight: 600;
+  line-height: 1;
+}
+.about-me-links {
+  margin-top: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  row-gap: 1.25rem;
+  justify-content: start;
+}
+.about-me-links > a {
+  display: flex;
+  flex: 33.333% 0 0;
+  align-items: center;
+  text-align: left;
+  font-size: 0.8em;
+  column-gap: 0.4em;
+}
+.about-me-links > a > svg {
+  width: 40px;
+}
+.about-me-links > a > svg .fill {
+  fill: var(--r-link-color);
+}
+.about-me-links > a:is(:hover, :focus) > svg .fill {
+  fill: var(--r-link-color-hover);
+}
+.about-me-links > div > svg .fill-bg,
+.about-me-links > a > svg .fill-bg {
+  fill: var(--r-background-color);
+}
+.about-me-links > a > span > span,
+.about-me-links > a > span > b {
+  display: block;
+  line-height: 1;
+}
+.about-me-links > a > span > span {
+  color: var(--r-main-color);
+}
+
+/* Slides e Workshops */
+#qrcode-slide {
+  margin: 0;
+  background: #fff;
+  border-radius: var(--border-radius);
+}
+#qrcode-workshops-text {
+  line-height: 1.2;
+  font-size: 1.3em;
+}
+
+
+/* Referências */
+a.reference {
+  font-size: 0.6em;
+}
+a.reference {
+  margin-top: 1em;
+  --link-opacity: 0.5;
+  opacity: var(--link-opacity);
+}
+a.reference:before {
+  opacity: var(--link-opacity);
+  content: '<';
+}
+a.reference:after {
+  opacity: var(--link-opacity);
+  content: '>';
+}
