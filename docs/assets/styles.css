@@ -1,12 +1,22 @@
 :root {
-  --r-main-font-size: 28px;
-  --r-heading-text-transform: none;
+  --r-background-color: #3f2a2b;
+  --r-heading-color: #06d6a0;
   --r-heading-letter-spacing: -0.04em;
+  --r-heading-text-transform: none;
+  --r-link-color-dark: #036b50;
+  --r-link-color-hover: #05ab80;
+  --r-link-color: #ffd166;
+  --r-main-color: #fffcf9;
+  --r-main-font-size: 28px;
   --code-letter-spacing: -0.02em;
+  --code-color: #ef476f;
   --border-radius: 0.5em;
 }
 
 /* Slides */
+#first-slide > h2 {
+  opacity: 0.6;
+}
 .reveal .slides {
   letter-spacing: var(--r-heading-letter-spacing);
 }
@@ -22,7 +32,7 @@ h1:not(.title, :last-child) {
   --r-heading1-size: 1.2em;
   --r-heading-font-weight: 500;
   --r-heading-margin: 0;
-  opacity: 0.25;
+  opacity: 0.5;
 }
 
 /* Tipografia */
@@ -31,6 +41,10 @@ h1:not(.title, :last-child) {
 }
 .reveal strong, .reveal b {
   font-weight: 600;
+}
+.reveal blockquote {
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Layout */
@@ -53,6 +67,7 @@ code.hljs {
 }
 kbd, code:not(.hljs) {
   font-family: var(--r-code-font);
+  color: var(--code-color);
 }
 .hljs-ln-line.hljs-ln-numbers {
   white-space: nowrap;
