@@ -18,7 +18,7 @@
               integrity="sha512-Xn1b0y/BrCD7usnEh6r9CcKxHXFVleVUjGDnfc95zDDwFUwtOz3lJC/XtJcuLRNyrMQJEEToFfwjC9Ue/aWY/g=="
               crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap">
+              href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,800;1,400;1,500;1,600;1,800&display=swap">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.34.1/tabler-icons.min.css"
               integrity="sha512-s0zOeW/zxh8f817uykbgBqmx1dwmdvWwQYamh+lU9NzP8jeQ/ikNPE9dBK+C55A5WUtOetZAI09tLxKIj0r9WQ=="
               crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -28,16 +28,20 @@
         <div class="reveal">
             <div class="slides">
                 <section id="first-slide">
-                    <h1 class="title">Criando nosso próprio sistema de deployment do zero</h1>
-                    <h2>Vinícius Campitelli</h2>
+                    <h1 class="title">
+                        <i class="ti ti-world-bolt"></i>
+                        Criando nosso próprio<br>
+                        <b>sistema de <i>deployment</i></b><br>
+                        <span>do zero</span>
+                    </h1>
                 </section>
 
                 <section> <!-- Sobre -->
                     <section>
-                        <h1>Sobre</h1>
+                        <h1><i class="ti ti-user"></i> Sobre</h1>
                     </section>
                     <section>
-                        <h1>Sobre</h1>
+                        <h1><i class="ti ti-user"></i> Sobre</h1>
                         <h2>Sobre mim</h2>
                         <div id="about-me">
                             <div class="text-center">
@@ -153,7 +157,7 @@
                         </div>
                     </section>
                     <section>
-                        <h1><span>Sobre</span></h1>
+                        <h1><i class="ti ti-user"></i> Sobre</h1>
                         <h2>Slides</h2>
                         <p>
                             Acesse os <i>slides</i> remotamente em:
@@ -170,7 +174,7 @@
                         </a>
                     </section>
                     <section>
-                        <h1><span>Sobre</span></h1>
+                        <h1><i class="ti ti-user"></i> Sobre</h1>
                         <h2>Repositório</h2>
                         <p>
                             Acesse os <i>slides</i> e os códigos das demonstrações localmente clonando o
@@ -188,10 +192,10 @@
 
                 <section> <!-- Estratégias -->
                     <section>
-                        <h1>Estratégias</h1>
+                        <h1><i class="ti ti-chess-queen"></i> Estratégias</h1>
                     </section>
                     <section>
-                        <h1>Estratégias</h1>
+                        <h1><i class="ti ti-chess-queen"></i> Estratégias</h1>
                         <h2><i>Recreate deployment</i></h2>
                         <p>
                             Desliga a versão atual e sobe a nova em seguida. Simples, porém com indisponibilidade
@@ -205,7 +209,7 @@
                         </a>
                     </section>
                     <section>
-                        <h1>Estratégias</h1>
+                        <h1><i class="ti ti-chess-queen"></i> Estratégias</h1>
                         <h2><i>Rolling deployment</i></h2>
                         <p>
                             Atualiza gradualmente instância por instância. Minimiza <i>downtime</i>, mas pode misturar
@@ -219,7 +223,7 @@
                         </a>
                     </section>
                     <section>
-                        <h1>Estratégias</h1>
+                        <h1><i class="ti ti-chess-queen"></i> Estratégias</h1>
                         <h2><i>Canary deployment</i></h2>
                         <p>
                             Libera para uma pequena parcela dos usuários primeiro. Monitora métricas; se tudo estiver
@@ -233,11 +237,11 @@
                         </a>
                     </section>
                     <section>
-                        <h1>Estratégias</h1>
+                        <h1><i class="ti ti-chess-queen"></i> Estratégias</h1>
                         <h2><i>Blue/green deployment</i></h2>
                         <p>
-                            Mantém dois ambientes idênticos (blue e green). Você publica na “nova” cor, valida e muda o
-                            tráfego em um clique, com rollback instantâneo.
+                            Mantém dois ambientes idênticos (<i>blue</i> e <i>green</i>). Você publica na “nova” cor,
+                            valida e muda o tráfego em um clique, com rollback instantâneo.
                         </p>
                         <img src="assets/img/deployment-blue-green.png" alt="Blue/green deployment"
                              class="filter-invert r-stretch">
@@ -250,10 +254,10 @@
 
                 <section> <!-- Disclaimer -->
                     <section data-auto-animate data-auto-animate-restart>
-                        <h1 class="title"><i>Disclaimer</i></h1>
+                        <h1 class="title"><i class="ti ti-alert-triangle"></i> <i>Disclaimer</i></h1>
                     </section>
                     <section data-auto-animate>
-                        <h1 class="title"><i>Disclaimer</i></h1>
+                        <h1 class="title"><i class="ti ti-alert-triangle"></i> <i>Disclaimer</i></h1>
                         <blockquote>
                             O intuito dessa palestra é meramente educacional! Em cenários reais, é extremamente
                             recomendado utilizar ferramentas robustas de mercado.
@@ -263,12 +267,12 @@
 
                 <section> <!-- Prática -->
                     <section>
-                        <h1>Prática</h1>
+                        <h1><i class="ti ti-tools"></i> Prática</h1>
                     </section>
                     <section>
                         <h1>Prática</h1>
-                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
-                        <pre><code class="yaml" data-trim data-line-numbers="|2-9|11-15|17-21">
+                        <h2><i class="ti ti-brand-docker"></i> Gerenciamento com <i>Docker Compose</i></h2>
+                        <pre><code class="yaml" data-trim data-line-numbers="|2-11|13-17|19-23">
                             services:
                               nginx:
                                 image: nginx:1-alpine
@@ -300,7 +304,7 @@
                     </section>
                     <section data-auto-animate>
                         <h1>Prática</h1>
-                        <h2>Gerenciamento com <i>Docker Compose</i></h2>
+                        <h2><i class="ti ti-brand-docker"></i> Gerenciamento com <i>Docker Compose</i></h2>
                         <pre><code class="dotenv" data-trim data-line-numbers>
                             APP_HOST=app1
                             IMAGE1=aplicacao:1.0.0
@@ -310,7 +314,7 @@
                     </section>
                     <section>
                         <h1>Prática</h1>
-                        <h2>Roteamento do tráfego com nginx</h2>
+                        <h2><i class="ti ti-world-www"></i> Roteamento do tráfego com nginx</h2>
                         <pre><code class="nginx" data-trim data-line-numbers="|12">
                             server {
                                 listen 80 default_server;
@@ -335,8 +339,9 @@
                     </section>
                     <section>
                         <h1>Prática</h1>
-                        <h2><i>Script</i> que controla tudo</h2>
-                        <pre><code class="bash" data-trim data-line-numbers>
+                        <h2><i class="ti ti-terminal-2"></i> <i>Script</i> que controla tudo</h2>
+                        <pre><code class="bash" data-trim
+                                   data-line-numbers="|4-7|9-19|21-29|31-50|52-65|67-68|70-71|73-78|80-87|89-90|92">
                             #!/bin/bash
                             set -e
 
@@ -435,10 +440,10 @@
 
                 <section> <!-- GitHub Actions -->
                     <section data-auto-animate data-auto-animate-restart>
-                        <h1 class="title">GitHub Actions</h1>
+                        <h1 class="title"><i class="ti ti-brand-github"></i> GitHub Actions</h1>
                     </section>
                     <section data-auto-animate>
-                        <h1 class="title">GitHub Actions</h1>
+                        <h1 class="title"><i class="ti ti-brand-github"></i> GitHub Actions</h1>
                         <blockquote>
                             Automatize, personalize e execute seus fluxos de trabalho de desenvolvimento do software
                             diretamente no seu repositório com o GitHub Actions. Você pode descobrir, criar e
@@ -452,7 +457,7 @@
                         </a>
                     </section>
                     <section data-auto-animate>
-                        <h1 class="title">GitHub Actions</h1>
+                        <h1 class="title"><i class="ti ti-brand-github"></i> GitHub Actions</h1>
 
                         <p>
                             Um <b>Fluxo de trabalho</b> <i>("workflow")</i> é configurado através de um arquivo
@@ -468,12 +473,12 @@
                 </section> <!-- GitHub Actions -->
 
                 <section> <!-- Como automatizar? -->
-                    <section data-auto-animate data-auto-animate-restart>
-                        <h1 class="title">Como automatizar?</h1>
+                    <section>
+                        <h1><i class="ti ti-automation"></i> Como automatizar?</h1>
                     </section>
-                    <section data-auto-animate>
-                        <h1 class="title">Como automatizar?</h1>
-                        <p class="fw-bold mb-0"><i>Webhook</i></p>
+                    <section>
+                        <h1><i class="ti ti-automation"></i> Como automatizar?</h1>
+                        <h2><i>Webhook</i></h2>
                         <p class="mt-0">
                             Ao mesclarmos uma PR, invocamos um <i>endpoint</i> protegido na máquina de destino
                             com o <i>hash</i> do <i>commit</i>
@@ -497,9 +502,9 @@
                             </div>
                         </div>
                     </section>
-                    <section data-auto-animate>
-                        <h1 class="title">Como automatizar?</h1>
-                        <p class="fw-bold mb-0"><i>Long polling</i></p>
+                    <section>
+                        <h1><i class="ti ti-automation"></i> Como automatizar?</h1>
+                        <h2><i>Long polling</i></h2>
                         <p class="mt-0">
                             Instalamos um agente na máquina de destino que fica consultando a API do GitHub a cada
                             <kbd>x</kbd> minutos para verificar se há um novo <i>commit</i>
@@ -524,9 +529,9 @@
                             </div>
                         </div>
                     </section>
-                    <section data-auto-animate>
-                        <h1 class="title">Como automatizar?</h1>
-                        <p class="fw-bold mb-0">SSH</p>
+                    <section>
+                        <h1><i class="ti ti-automation"></i> Como automatizar?</h1>
+                        <h2>SSH</h2>
                         <p class="mt-0">
                             Fazemos o GitHub acessar a máquina via SSH e executar um comando que irá iniciar o
                             processo
@@ -556,11 +561,12 @@
 
                 <section> <!-- Automatizando com GitHub Actions -->
                     <section data-auto-animate data-auto-animate-restart>
-                        <h1 class="title">Automatizando com GitHub Actions</h1>
+                        <h1 class="title"><i class="ti ti-settings-bolt"></i> Automatizando com GitHub Actions</h1>
                     </section>
                     <section data-auto-animate>
-                        <h1 class="title">Automatizando com GitHub Actions</h1>
-                        <pre><code class="yaml" data-trim data-line-numbers>
+                        <h1 class="title"><i class="ti ti-settings-bolt"></i> Automatizando com GitHub Actions</h1>
+                        <pre><code class="yaml" data-trim
+                                   data-line-numbers="|1|3-5|7-8|9-13|14-22|23|24-25|27-33|35-40|42-43|45-50|52-58|60-64|66-71|73-75|77-85|87-90">
                             name: Deploy do Backend
 
                             on:
@@ -657,11 +663,47 @@
 
                 <section> <!-- Referências -->
                     <section data-auto-animate data-auto-animate-restart>
-                        <h1 class="title">Referências</h1>
+                        <h1 class="title"><i class="ti ti-book"></i> Referências</h1>
                     </section>
                     <section data-auto-animate>
-                        <h1 class="title">Referências</h1>
+                        <h1 class="title"><i class="ti ti-book"></i> Referências</h1>
                         <ul>
+                            <li>
+                                <a href="https://docs.aws.amazon.com/pt_br/codedeploy/latest/userguide/welcome.html"
+                                   target="_blank" rel="noopener">
+                                    AWS CodeDeploy
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://deployer.org/" target="_blank" rel="noopener">
+                                    Deployer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://docs.envoyer.io/" target="_blank" rel="noopener">
+                                    Envoyer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://fly.io/docs/" target="_blank" rel="noopener">
+                                    Fly.io
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.heroku.com/" target="_blank" rel="noopener">
+                                    Heroku
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://render.com/" target="_blank" rel="noopener">
+                                    Render
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://vercel.com/" target="_blank" rel="noopener">
+                                    Vercel
+                                </a>
+                            </li>
                             <li>
                                 <a href="https://web.archive.org/web/20250310050530/https://www.maxcountryman.com/articles/zero-downtime-deployments-with-docker-compose"
                                    target="_blank" rel="noopener">
@@ -673,7 +715,7 @@
                 </section> <!-- Referências -->
 
                 <section> <!-- Treinamentos in company -->
-                    <h1 class="title">Treinamentos <i>in company</i></h1>
+                    <h1 class="title"><i class="ti ti-chalkboard-teacher"></i> Treinamentos <i>in company</i></h1>
                     <div class="d-flex items-center">
                         <div style="flex-shrink: 0">
                             <a href="https://bit.ly/vcampitelli" target="_blank" rel="noopener" class="d-block">
@@ -691,7 +733,7 @@
                 </section> <!-- Treinamentos in company -->
 
                 <section> <!-- Obrigado -->
-                    <h1 class="text-center title">Obrigado!</h1>
+                    <h1 class="text-center title"><i class="ti ti-heart"></i> Obrigado!</h1>
                     <div class="about-me-links">
                         <a href="https://viniciuscampitelli.com" target="_blank" rel="noopener">
                             <svg role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

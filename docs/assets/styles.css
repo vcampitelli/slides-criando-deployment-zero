@@ -1,25 +1,31 @@
 :root {
   --r-background-color: #001219;
-  --r-heading-color: #0a9396;
+  --r-heading-color: #3590f3;
   --r-heading-font: var(--r-main-font);
   --r-heading-letter-spacing: -0.04em;
   --r-heading-text-transform: none;
   --r-link-color-dark: #9b2226;
   --r-link-color-hover: #bb3e03;
   --r-link-color: #ca6702;
-  --r-main-color: #94d2bd;
-  --r-main-font-size: 26px;
+  --r-main-color: #dfdfdf;
+  --r-main-font-size: 25px;
   --r-main-font: "Fira Sans", sans-serif;
   --border-radius: 0.25em;
-  --code-color: #ee9b00;
+  --code-inline-color: #fe5f55;
+  --code-background-color: #1a2a30;
   --code-letter-spacing: -0.02em;
-  --color-alternative: #e9d8a6;
-  --color-subheading: #005f73;
 }
 
 /* Slides */
+#first-slide > h1,
+#first-slide > h1 > b {
+  font-weight: 800;
+}
+#first-slide > h1 > b {
+  color: var(--r-main-color);
+}
 #first-slide > h2 {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 .reveal .slides {
   letter-spacing: var(--r-heading-letter-spacing);
@@ -40,14 +46,11 @@ h1:not(.title, :last-child) {
 }
 
 /* Tipografia */
-.reveal em, .reveal i {
+.reveal em, .reveal i:not(.ti) {
   font-style: oblique;
 }
 .reveal strong, .reveal b, .fw-bold {
   font-weight: 600;
-}
-p.fw-bold {
-  color: var(--color-alternative);
 }
 .reveal blockquote {
   margin: 0 auto;
@@ -55,6 +58,20 @@ p.fw-bold {
   padding: 10px 5px;
   box-shadow: none;
   border-radius: var(--border-radius);
+}
+
+/* Ícones */
+.ti {
+  font-size: 0.9em;
+}
+.ti.d-block {
+  display: block;
+}
+h1 > .ti,
+h2 > .ti {
+  display: inline-block;
+  margin-left: -1.15em;
+  color: var(--code-inline-color);
 }
 
 /* Layout */
@@ -79,16 +96,18 @@ p.fw-bold {
   /* Código */
 .reveal pre {
   width: 100%;
+  font-size: 0.6em;
   letter-spacing: var(--code-letter-spacing);
   line-height: 1.4;
 }
 code.hljs {
   border-radius: var(--border-radius);
-  scrollbar-color: #333232 #1c1b1b;
+  background-color: var(--code-background-color);
+  scrollbar-color: var(--r-background-color) var(--code-background-color);
 }
 kbd, code:not(.hljs) {
   font-family: var(--r-code-font);
-  color: var(--code-color);
+  color: var(--code-inline-color);
 }
 .hljs-ln-line.hljs-ln-numbers {
   white-space: nowrap;
