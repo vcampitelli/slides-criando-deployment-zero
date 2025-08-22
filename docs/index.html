@@ -620,7 +620,7 @@
                                       username: ${{ secrets.SSH_USERNAME }}
                                       key: ${{ secrets.SSH_KEY }}
                                       passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
-                                      script: app-deploy ${{ steps.meta.outputs.tags }}
+                                      script: docker-compose-update ${{ steps.meta.outputs.tags }}
                         </code></pre>
                     </section>
                 </section> <!-- Automatizando com GitHub Actions -->
