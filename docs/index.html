@@ -13,8 +13,14 @@
         <link rel="stylesheet" href="reveal.js/dist/reset.css">
         <link rel="stylesheet" href="reveal.js/dist/reveal.css">
         <link rel="stylesheet" href="reveal.js/dist/theme/black.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/arta.min.css"
-              integrity="sha512-iDb8izWvq2INB7dng2J5SUvQsqwMMwqIhxL2qir0/gadcp2rUCaiXkSBB1nwdeokaBGi2rV/yUaEAJiPiQ4EiQ=="
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/stackoverflow-dark.min.css"
+              integrity="sha512-Xn1b0y/BrCD7usnEh6r9CcKxHXFVleVUjGDnfc95zDDwFUwtOz3lJC/XtJcuLRNyrMQJEEToFfwjC9Ue/aWY/g=="
+              crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.34.1/tabler-icons.min.css"
+              integrity="sha512-s0zOeW/zxh8f817uykbgBqmx1dwmdvWwQYamh+lU9NzP8jeQ/ikNPE9dBK+C55A5WUtOetZAI09tLxKIj0r9WQ=="
               crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet" href="assets/styles.css">
     </head>
@@ -272,6 +278,8 @@
                                   - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
                                 environment:
                                   APP_HOST: $APP_HOST
+                                healthcheck:
+                                  test: ["CMD", "curl", "-f", "localhost/ping"]
 
                               app1:
                                 image: $IMAGE1
@@ -327,7 +335,101 @@
                     </section>
                     <section>
                         <h1>Prática</h1>
-                        <h2><i>Rollback</i></h2>
+                        <h2><i>Script</i> que controla tudo</h2>
+                        <pre><code class="bash" data-trim data-line-numbers>
+                            #!/bin/bash
+                            set -e
+
+                            if [ -z "$1" ]; then
+                              echo "Uso: $0 &lt;imagem-docker>"
+                              exit 1
+                            fi
+
+                            image="$1"
+                            docker_compose_file="compose.yaml"
+                            service1="app1"
+                            service2="app2"
+                            service1_env="IMAGE1"
+                            service2_env="IMAGE2"
+                            env_file=".env"
+                            nginx_service="nginx"
+                            timeout=60 # timeout em segundos para cada checagem de serviço saudável
+                            sleep_interval=3 # tempo em segundos para esperar entre tentativas
+                            max_retries=$((timeout / sleep_interval))
+
+                            # Checando existência dos arquivos
+                            if [ ! -f "$docker_compose_file" ]; then
+                              echo "Arquivo $docker_compose_file não encontrado"
+                              exit 1
+                            fi
+                            if [ ! -f "$env_file" ]; then
+                              echo "Arquivo $env_file não encontrado"
+                              exit 1
+                            fi
+
+                            #
+                            # Checando se o serviço está saudável
+                            # @param string $1 Nome do serviço do Docker
+                            #
+                            check_health() {
+                              i=1
+                              while [ "$i" -le $max_retries ]; do
+                                status=$(docker compose -f "$docker_compose_file" ps "$1" --status running --format "{{.Health}}")
+                                echo "  Healthcheck: $status"
+                                if [ "$status" = "healthy" ]; then
+                                  echo "$1 is healthy"
+                                  return 0
+                                fi
+
+                                sleep "$sleep_interval"
+                                i=$((i + 1))
+                              done
+
+                              return 1
+                            }
+
+                            # Descobrindo qual serviço (1 ou 2) está ativo
+                            if [ -n "$(docker compose -f "$docker_compose_file" ps "$service1" --status running --quiet)" ]; then
+                              old_service=$service1
+                              new_service=$service2
+                              env_name=$service2_env
+                            elif [ -n "$(docker compose -f "$docker_compose_file" ps "$service2" --status running --quiet)" ]; then
+                              old_service=$service2
+                              new_service=$service1
+                              env_name=$service1_env
+                            else
+                              old_service=""
+                              new_service=$service2
+                              env_name=$service2_env
+                            fi
+
+                            # Trocando o nome da imagem do Docker no arquivo .env
+                            sed -i "/$env_name=/c\\$env_name=$image" "$env_file"
+
+                            echo "Iniciando serviço $new_service"
+                            docker compose -f "$docker_compose_file" up --build --remove-orphans --detach "$new_service"
+
+                            echo "Aguardando até que $new_service esteja saudável.."
+                            if ! check_health "$new_service"; then
+                              echo "$new_service não ficou saudável em $timeout segundos"
+                              docker compose -f "$docker_compose_file" stop --timeout=10 "$new_service"
+                              exit 2
+                            fi
+
+                            echo "Recarregando configuração do nginx"
+                            docker compose -f "$docker_compose_file" exec --env "APP_HOST=$new_service" "$nginx_service" /docker-entrypoint.d/20-envsubst-on-templates.sh
+                            docker compose -f "$docker_compose_file" exec "$nginx_service" nginx -s reload
+                            if ! check_health "$nginx_service"; then
+                              echo "$new_service não ficou saudável em $timeout segundos"
+                              docker compose -f "$docker_compose_file" stop --timeout=10 "$new_service"
+                              exit 2
+                            fi
+
+                            echo "Parando container $old_service"
+                            docker compose -f "$docker_compose_file" stop --timeout=10 "$old_service"
+
+                            echo "Deploy finalizado com sucesso"
+                        </code></pre>
                     </section>
                 </section> <!-- Prática -->
 
@@ -359,16 +461,197 @@
                         </p>
 
                         <a href="https://viniciuscampitelli.com/slides-pipelines-ci-cd/" target="_blank" rel="noopener"
-                           class="reference">Meus slides: Criando esteiras de CI/CD performáticas e seguras</a>
+                           class="reference">
+                            Meus slides: Criando esteiras de CI/CD performáticas e seguras
+                        </a>
                     </section>
                 </section> <!-- GitHub Actions -->
 
-                <section> <!-- Automatizando com GitHub Actions -->
+                <section> <!-- Como automatizar? -->
                     <section data-auto-animate data-auto-animate-restart>
-                        <h1>Automatizando com GitHub Actions</h1>
+                        <h1 class="title">Como automatizar?</h1>
                     </section>
                     <section data-auto-animate>
-                        <h1>Automatizando com GitHub Actions</h1>
+                        <h1 class="title">Como automatizar?</h1>
+                        <p class="fw-bold mb-0"><i>Webhook</i></p>
+                        <p class="mt-0">
+                            Ao mesclarmos uma PR, invocamos um <i>endpoint</i> protegido na máquina de destino
+                            com o <i>hash</i> do <i>commit</i>
+                        </p>
+                        <div class="d-flex cols-equal">
+                            <div class="fragment">
+                                <p><b>Prós</b></p>
+                                <ul>
+                                    <li>
+                                        O sistema só será avisado quando realmente houver algo a ser feito
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="fragment">
+                                <p><b>Contras</b></p>
+                                <ul>
+                                    <li>
+                                        Precisamos expor um <i>endpoint</i> para a Internet, protegendo-o bem
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <section data-auto-animate>
+                        <h1 class="title">Como automatizar?</h1>
+                        <p class="fw-bold mb-0"><i>Long polling</i></p>
+                        <p class="mt-0">
+                            Instalamos um agente na máquina de destino que fica consultando a API do GitHub a cada
+                            <kbd>x</kbd> minutos para verificar se há um novo <i>commit</i>
+                        </p>
+                        <div class="d-flex cols-equal">
+                            <div class="fragment">
+                                <p><b>Prós</b></p>
+                                <ul>
+                                    <li>
+                                        Não precisamos expor nada do nosso ambiente para fora
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="fragment">
+                                <p><b>Contras</b></p>
+                                <ul>
+                                    <li>
+                                        Serão feitas muitas requisições por dia para o GitHub &mdash; e muitas delas à
+                                        toa
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <section data-auto-animate>
+                        <h1 class="title">Como automatizar?</h1>
+                        <p class="fw-bold mb-0">SSH</p>
+                        <p class="mt-0">
+                            Fazemos o GitHub acessar a máquina via SSH e executar um comando que irá iniciar o
+                            processo
+                        </p>
+                        <div class="d-flex cols-equal">
+                            <div class="fragment">
+                                <p><b>Prós</b></p>
+                                <ul>
+                                    <li>
+                                        O sistema só será avisado quando realmente houver algo a ser feito
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="fragment">
+                                <p><b>Contras</b></p>
+                                <ul>
+                                    <li>
+                                        Precisamos expor o acesso via SSH para a Internet (ou invocar a API do serviço
+                                        de hospedagem para liberar o acesso temporariamente para o IP atual do GitHub
+                                        Actions)
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </section> <!-- Como automatizar? -->
+
+                <section> <!-- Automatizando com GitHub Actions -->
+                    <section data-auto-animate data-auto-animate-restart>
+                        <h1 class="title">Automatizando com GitHub Actions</h1>
+                    </section>
+                    <section data-auto-animate>
+                        <h1 class="title">Automatizando com GitHub Actions</h1>
+                        <pre><code class="yaml" data-trim data-line-numbers>
+                            name: Deploy do Backend
+
+                            on:
+                              push:
+                                branches: [ "main" ]
+
+                            jobs:
+                              deploy:
+                                name: Deploy to Oracle
+                                runs-on: ubuntu-latest
+                                permissions:
+                                  contents: read
+                                  packages: write
+                                env:
+                                  APP_ENV: production
+                                  OCI_CLI_USER: ${{ secrets.ORACLE_USER_OCID }}
+                                  OCI_CLI_TENANCY: ${{ secrets.ORACLE_TENANCY_OCID }}
+                                  OCI_CLI_FINGERPRINT: ${{ secrets.ORACLE_FINGERPRINT }}
+                                  OCI_CLI_KEY_CONTENT: ${{ secrets.ORACLE_PRIVATE_KEY }}
+                                  OCI_CLI_REGION: ${{ secrets.ORACLE_REGION }}
+                                  REGISTRY: ghcr.io
+                                  IMAGE_NAME: ${{ github.repository }}
+                                steps:
+                                  - name: Checkout
+                                    uses: actions/checkout@v4
+
+                                  - name: Configura PHP
+                                    uses: shivammathur/setup-php@v2
+                                    with:
+                                      php-version: 8.4
+
+                                  - name: Instala dependências
+                                    uses: ramsey/composer-install@v3
+
+                                  - name: Fazendo login no Registry de Containers
+                                    uses: docker/login-action@v3
+                                    with:
+                                      registry: ${{ env.REGISTRY }}
+                                      username: ${{ github.actor }}
+                                      password: ${{ secrets.GITHUB_TOKEN }}
+
+                                  - name: Configurando Docker Buildx
+                                    uses: docker/setup-buildx-action@v3
+
+                                  - name: Extract metadata (tags, labels) for Docker
+                                    id: meta
+                                    uses: docker/metadata-action@v5
+                                    with:
+                                      images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                                      tags: type=sha
+
+                                  - name: Faz o build da imagem do Docker
+                                    uses: docker/build-push-action@v6
+                                    id: build
+                                    with:
+                                      push: true
+                                      tags: ${{ steps.meta.outputs.tags }}
+                                      labels: ${{ steps.meta.outputs.labels }}
+
+                                  - name: Checando IP atual do GitHub Actions
+                                    id: retrieve-ip
+                                    run: |
+                                      response=$(curl -s -4 https://ipecho.net/plain)
+                                      echo "ip=$response" >> "$GITHUB_OUTPUT"
+
+                                  - name: OCI - Adiciona IP ao NSG
+                                    uses: oracle-actions/run-oci-cli-command@v1
+                                    id: nsg-add-ip-raw
+                                    with:
+                                      command: 'network nsg rules add --nsg-id ${{ secrets.ORACLE_NSG_ID }} --security-rules "[{\"description\": \"GitHub Action ${{ github.run_id }}\", \"direction\": \"INGRESS\", \"protocol\": \"6\", \"sourceType\": \"CIDR_BLOCK\", \"source\": \"${{ steps.retrieve-ip.outputs.ip }}/32\", \"tcpOptions\": { \"destinationPortRange\": { \"max\": 22, \"min\": 22 } } } ]"'
+                                      query: 'data.\"security-rules\"[0].id'
+
+                                  - name: Extrai ID da Security Rule adicionada
+                                    id: nsg-add-ip
+                                    run: echo "output=$(echo ${{ steps.nsg-add-ip-raw.outputs.output }} | jq -r .)" >> "$GITHUB_OUTPUT"
+
+                                  - name: Executando comandos via SSH
+                                    uses: appleboy/ssh-action@v1.2.2
+                                    with:
+                                      host: ${{ secrets.SSH_HOST }}
+                                      port: ${{ secrets.SSH_PORT }}
+                                      username: ${{ secrets.SSH_USERNAME }}
+                                      key: ${{ secrets.SSH_KEY }}
+                                      passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+                                      script: app-deploy ${{ steps.meta.outputs.tags }}
+
+                                  - name: OCI - Remove IP do NSG
+                                    uses: oracle-actions/run-oci-cli-command@v1
+                                    with:
+                                      command: 'network nsg rules remove --nsg-id ${{ secrets.ORACLE_NSG_ID }} --security-rule-ids "[\"${{ steps.nsg-add-ip.outputs.output }}\"]"'
+                        </code></pre>
                     </section>
                 </section> <!-- Automatizando com GitHub Actions -->
 
@@ -378,6 +661,13 @@
                     </section>
                     <section data-auto-animate>
                         <h1 class="title">Referências</h1>
+                        <ul>
+                            <li>
+                                <a href="https://web.archive.org/web/20250310050530/https://www.maxcountryman.com/articles/zero-downtime-deployments-with-docker-compose"
+                                   target="_blank" rel="noopener">
+                                    Zero-Downtime Deployments with Docker Compose
+                                </a>
+                            </li>
                         </ul>
                     </section>
                 </section> <!-- Referências -->

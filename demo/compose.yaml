@@ -7,6 +7,8 @@ services:
       - "./nginx.conf.template:/etc/nginx/templates/default.conf.template"
     environment:
       APP_HOST: $APP_HOST
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost/ping"]
 
   app1:
     image: $IMAGE1

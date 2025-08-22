@@ -1,0 +1,92 @@
+#!/bin/bash
+set -e
+
+if [ -z "$1" ]; then
+  echo "Uso: $0 <imagem-docker>"
+  exit 1
+fi
+
+image="$1"
+docker_compose_file="compose.yaml"
+service1="app1"
+service2="app2"
+service1_env="IMAGE1"
+service2_env="IMAGE2"
+env_file=".env"
+nginx_service="nginx"
+timeout=60 # timeout em segundos para cada checagem de serviço saudável
+sleep_interval=3 # tempo em segundos para esperar entre tentativas
+max_retries=$((timeout / sleep_interval))
+
+# Checando existência dos arquivos
+if [ ! -f "$docker_compose_file" ]; then
+  echo "Arquivo $docker_compose_file não encontrado"
+  exit 1
+fi
+if [ ! -f "$env_file" ]; then
+  echo "Arquivo $env_file não encontrado"
+  exit 1
+fi
+
+#
+# Checando se o serviço está saudável
+# @param string $1 Nome do serviço do Docker
+#
+check_health() {
+  i=1
+  while [ "$i" -le $max_retries ]; do
+    status=$(docker compose -f "$docker_compose_file" ps "$1" --status running --format "{{.Health}}")
+    echo "  Healthcheck: $status"
+    if [ "$status" = "healthy" ]; then
+      echo "$1 is healthy"
+      return 0
+    fi
+
+    sleep "$sleep_interval"
+    i=$((i + 1))
+  done
+
+  return 1
+}
+
+# Descobrindo qual serviço (1 ou 2) está ativo
+if [ -n "$(docker compose -f "$docker_compose_file" ps "$service1" --status running --quiet)" ]; then
+  old_service=$service1
+  new_service=$service2
+  env_name=$service2_env
+elif [ -n "$(docker compose -f "$docker_compose_file" ps "$service2" --status running --quiet)" ]; then
+  old_service=$service2
+  new_service=$service1
+  env_name=$service1_env
+else
+  old_service=""
+  new_service=$service2
+  env_name=$service2_env
+fi
+
+# Trocando o nome da imagem do Docker no arquivo .env
+sed -i "/$env_name=/c\\$env_name=$image" "$env_file"
+
+echo "Iniciando serviço $new_service"
+docker compose -f "$docker_compose_file" up --build --remove-orphans --detach "$new_service"
+
+echo "Aguardando até que $new_service esteja saudável.."
+if ! check_health "$new_service"; then
+  echo "$new_service não ficou saudável em $timeout segundos"
+  docker compose -f "$docker_compose_file" stop --timeout=10 "$new_service"
+  exit 2
+fi
+
+echo "Recarregando configuração do nginx"
+docker compose -f "$docker_compose_file" exec --env "APP_HOST=$new_service" "$nginx_service" /docker-entrypoint.d/20-envsubst-on-templates.sh
+docker compose -f "$docker_compose_file" exec "$nginx_service" nginx -s reload
+if ! check_health "$nginx_service"; then
+  echo "$new_service não ficou saudável em $timeout segundos"
+  docker compose -f "$docker_compose_file" stop --timeout=10 "$new_service"
+  exit 2
+fi
+
+echo "Parando container $old_service"
+docker compose -f "$docker_compose_file" stop --timeout=10 "$old_service"
+
+echo "Deploy finalizado com sucesso"
