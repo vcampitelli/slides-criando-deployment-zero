@@ -2,7 +2,7 @@ name: Deploy do Backend
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "aplicacao-demo" ]
 
 jobs:
   deploy:
