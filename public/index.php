@@ -1,2 +1,2 @@
 <?php
-echo 'Olá, sou a versão 2 (feita durante a apresentação) da minha aplicação!' . PHP_EOL;
+echo 'Olá, sou a versão 3 (pra finalizar) da minha aplicação!' . PHP_EOL;
